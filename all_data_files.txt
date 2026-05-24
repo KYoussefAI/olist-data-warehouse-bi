@@ -1,0 +1,139 @@
+Olist Raw Data Files
+
+Source folder: data/raw/
+
+1. olist_closed_deals_dataset.csv
+Source: data/raw/olist_closed_deals_dataset.csv
+Rows: 843 including header
+Description: Closed sales deals linking marketing-qualified leads to sellers and sales reps.
+Columns:
+- mql_id: Marketing qualified lead identifier.
+- seller_id: Seller identifier created when the lead became an Olist seller.
+- sdr_id: Sales development representative identifier.
+- sr_id: Sales representative identifier.
+- won_date: Timestamp when the deal was won.
+- business_segment: Seller business segment or category.
+- lead_type: Lead acquisition or qualification type.
+- lead_behaviour_profile: Lead behavior profile assigned during qualification.
+- has_company: Whether the lead reported having a registered company.
+- has_gtin: Whether the lead reported using GTIN / barcode identifiers.
+- average_stock: Reported average stock level or stock profile.
+- business_type: Seller business model, such as reseller.
+- declared_product_catalog_size: Reported number of products in the catalog.
+- declared_monthly_revenue: Reported monthly revenue amount.
+
+2. olist_customers_dataset.csv
+Source: data/raw/olist_customers_dataset.csv
+Rows: 99442 including header
+Description: Customer records used by orders. One `customer_unique_id` can appear in multiple orders through different `customer_id` values.
+Columns:
+- customer_id: Order-level customer identifier used in the orders table.
+- customer_unique_id: Stable customer identifier across multiple purchases.
+- customer_zip_code_prefix: First digits of the customer ZIP code.
+- customer_city: Customer city.
+- customer_state: Customer state abbreviation.
+
+3. olist_geolocation_dataset.csv
+Source: data/raw/olist_geolocation_dataset.csv
+Rows: 1000164 including header
+Description: Geolocation reference data by ZIP code prefix. The same ZIP prefix can appear multiple times with slightly different coordinates or city spellings.
+Columns:
+- geolocation_zip_code_prefix: ZIP code prefix used to locate customers or sellers.
+- geolocation_lat: Latitude for the ZIP prefix.
+- geolocation_lng: Longitude for the ZIP prefix.
+- geolocation_city: City name associated with the ZIP prefix.
+- geolocation_state: State abbreviation associated with the ZIP prefix.
+
+4. olist_marketing_qualified_leads_dataset.csv
+Source: data/raw/olist_marketing_qualified_leads_dataset.csv
+Rows: 8001 including header
+Description: Top-of-funnel marketing leads before they become closed deals or active sellers.
+Columns:
+- mql_id: Marketing qualified lead identifier.
+- first_contact_date: Date when the lead first contacted Olist.
+- landing_page_id: Identifier for the landing page tied to the lead.
+- origin: Lead source or acquisition channel, such as social or organic search.
+
+5. olist_order_items_dataset.csv
+Source: data/raw/olist_order_items_dataset.csv
+Rows: 112651 including header
+Description: Line items inside each order. An order can contain multiple items and multiple sellers.
+Columns:
+- order_id: Order identifier.
+- order_item_id: Sequential item number within the order.
+- product_id: Product identifier.
+- seller_id: Seller identifier for the item.
+- shipping_limit_date: Deadline for the seller to ship the item.
+- price: Item sale price.
+- freight_value: Freight charge assigned to the item.
+
+6. olist_order_payments_dataset.csv
+Source: data/raw/olist_order_payments_dataset.csv
+Rows: 103887 including header
+Description: Payment records for orders. A single order can have more than one payment row.
+Columns:
+- order_id: Order identifier.
+- payment_sequential: Sequence number of the payment entry within the order.
+- payment_type: Payment method, such as credit card, voucher, or boleto.
+- payment_installments: Number of installments used for the payment.
+- payment_value: Payment amount for this entry.
+
+7. olist_order_reviews_dataset.csv
+Source: data/raw/olist_order_reviews_dataset.csv
+Rows: 104720 including header
+Description: Customer review records attached to orders.
+Columns:
+- review_id: Review identifier.
+- order_id: Order identifier linked to the review.
+- review_score: Numeric review rating.
+- review_comment_title: Short review title.
+- review_comment_message: Free-text review message.
+- review_creation_date: Date when the review was created.
+- review_answer_timestamp: Timestamp when the review was answered or recorded.
+
+8. olist_orders_dataset.csv
+Source: data/raw/olist_orders_dataset.csv
+Rows: 99442 including header
+Description: Core order table with lifecycle timestamps and status.
+Columns:
+- order_id: Order identifier.
+- customer_id: Customer identifier linking to the customers table.
+- order_status: Current or final order status.
+- order_purchase_timestamp: Timestamp when the order was placed.
+- order_approved_at: Timestamp when the payment was approved.
+- order_delivered_carrier_date: Timestamp when the package was handed to the carrier.
+- order_delivered_customer_date: Timestamp when the customer received the order.
+- order_estimated_delivery_date: Estimated delivery date promised to the customer.
+
+9. olist_products_dataset.csv
+Source: data/raw/olist_products_dataset.csv
+Rows: 32952 including header
+Description: Product master data with category and physical dimensions.
+Columns:
+- product_id: Product identifier.
+- product_category_name: Product category name in Portuguese.
+- product_name_lenght: Length of the product name text.
+- product_description_lenght: Length of the product description text.
+- product_photos_qty: Number of product photos.
+- product_weight_g: Product weight in grams.
+- product_length_cm: Product length in centimeters.
+- product_height_cm: Product height in centimeters.
+- product_width_cm: Product width in centimeters.
+
+10. olist_sellers_dataset.csv
+Source: data/raw/olist_sellers_dataset.csv
+Rows: 3096 including header
+Description: Seller master data with location details.
+Columns:
+- seller_id: Seller identifier.
+- seller_zip_code_prefix: First digits of the seller ZIP code.
+- seller_city: Seller city.
+- seller_state: Seller state abbreviation.
+
+11. product_category_name_translation.csv
+Source: data/raw/product_category_name_translation.csv
+Rows: 71 including header
+Description: Mapping from Portuguese product category names to English labels.
+Columns:
+- product_category_name: Product category name in Portuguese.
+- product_category_name_english: English translation of the product category name.
