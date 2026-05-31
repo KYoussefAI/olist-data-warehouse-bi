@@ -1,5 +1,6 @@
--- Olist PostgreSQL DDL - final project version
--- Layers: raw -> staging -> dwh -> marts
+-- Dedicated schema and warehouse DDL for ETL bootstrap.
+-- This file intentionally excludes marts views.
+-- It is derived from sql/olist_postgresql_ddl.sql for backward compatibility.
 
 BEGIN;
 
@@ -9,7 +10,7 @@ CREATE SCHEMA IF NOT EXISTS dwh;
 CREATE SCHEMA IF NOT EXISTS marts;
 
 -- ---------------------------------------------------------------------------
--- RAW LANDING TABLES: mirror source CSV files
+-- RAW
 -- ---------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS raw.olist_customers (
@@ -137,7 +138,7 @@ CREATE INDEX IF NOT EXISTS idx_raw_geolocation_zip_prefix
     ON raw.olist_geolocation (geolocation_zip_code_prefix);
 
 -- ---------------------------------------------------------------------------
--- STAGING TABLES: cleaned and standardized structures
+-- STAGING
 -- ---------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS staging.stg_customers (
@@ -156,7 +157,7 @@ CREATE TABLE IF NOT EXISTS staging.stg_sellers (
 );
 
 CREATE TABLE IF NOT EXISTS staging.stg_geolocation (
-    zip_prefix TEXT PRIMARY KEY,
+    zip_prefix TEXT,
     latitude NUMERIC(10, 7),
     longitude NUMERIC(10, 7),
     city_name TEXT,
@@ -389,8 +390,7 @@ CREATE TABLE IF NOT EXISTS dwh.fact_marketing_leads (
     first_contact_date_key INTEGER REFERENCES dwh.dim_date (date_key),
     landing_page_key BIGINT REFERENCES dwh.dim_landing_page (landing_page_key),
     marketing_origin_key BIGINT REFERENCES dwh.dim_marketing_origin (marketing_origin_key),
-    lead_count INTEGER NOT NULL DEFAULT 1,
-    CHECK (lead_count > 0)
+    lead_count INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS dwh.fact_closed_deals (
@@ -409,7 +409,7 @@ CREATE TABLE IF NOT EXISTS dwh.fact_closed_deals (
     business_type TEXT,
     declared_product_catalog_size NUMERIC(14, 2),
     declared_monthly_revenue NUMERIC(14, 2),
-    is_active_seller BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active_seller BOOLEAN NOT NULL DEFAULT TRUE,
     deal_count INTEGER NOT NULL DEFAULT 1,
     CHECK (declared_product_catalog_size IS NULL OR declared_product_catalog_size >= 0),
     CHECK (declared_monthly_revenue IS NULL OR declared_monthly_revenue >= 0),
@@ -501,13 +501,22 @@ CREATE TABLE IF NOT EXISTS dwh.fact_reviews (
     CHECK (review_count > 0)
 );
 
-CREATE INDEX IF NOT EXISTS idx_fact_orders_customer_key ON dwh.fact_orders (customer_key);
-CREATE INDEX IF NOT EXISTS idx_fact_orders_purchase_date_key ON dwh.fact_orders (purchase_date_key);
-CREATE INDEX IF NOT EXISTS idx_fact_order_items_order_key ON dwh.fact_order_items (order_key);
-CREATE INDEX IF NOT EXISTS idx_fact_order_items_product_key ON dwh.fact_order_items (product_key);
-CREATE INDEX IF NOT EXISTS idx_fact_order_items_seller_key ON dwh.fact_order_items (seller_key);
-CREATE INDEX IF NOT EXISTS idx_fact_payments_order_key ON dwh.fact_payments (order_key);
-CREATE INDEX IF NOT EXISTS idx_fact_reviews_order_key ON dwh.fact_reviews (order_key);
-CREATE INDEX IF NOT EXISTS idx_fact_closed_deals_seller_key ON dwh.fact_closed_deals (seller_key);
+CREATE INDEX IF NOT EXISTS idx_fact_orders_customer_key
+    ON dwh.fact_orders (customer_key);
+
+CREATE INDEX IF NOT EXISTS idx_fact_order_items_order_key
+    ON dwh.fact_order_items (order_key);
+
+CREATE INDEX IF NOT EXISTS idx_fact_order_items_product_key
+    ON dwh.fact_order_items (product_key);
+
+CREATE INDEX IF NOT EXISTS idx_fact_payments_order_key
+    ON dwh.fact_payments (order_key);
+
+CREATE INDEX IF NOT EXISTS idx_fact_reviews_order_key
+    ON dwh.fact_reviews (order_key);
+
+CREATE INDEX IF NOT EXISTS idx_fact_closed_deals_seller_key
+    ON dwh.fact_closed_deals (seller_key);
 
 COMMIT;

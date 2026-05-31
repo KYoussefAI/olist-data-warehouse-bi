@@ -29,8 +29,8 @@ class Settings:
     @property
     def schema_sql_path(self) -> Path:
         candidates = [
-            self.sql_dir / "olist_postgresql_ddl.sql",
             self.sql_dir / "00_create_schemas_and_tables.sql",
+            self.sql_dir / "olist_postgresql_ddl.sql",
         ]
         for path in candidates:
             if path.exists():
@@ -40,13 +40,17 @@ class Settings:
     @property
     def marts_sql_path(self) -> Path:
         candidates = [
-            self.sql_dir / "olist_postgresql_ddl.sql",
             self.sql_dir / "01_create_marts.sql",
+            self.sql_dir / "olist_postgresql_ddl.sql",
         ]
         for path in candidates:
             if path.exists():
                 return path
         return candidates[0]
+
+    @property
+    def quality_sql_path(self) -> Path:
+        return self.sql_dir / "99_quality_checks.sql"
 
 
 settings = Settings()

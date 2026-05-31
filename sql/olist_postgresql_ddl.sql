@@ -1,4 +1,7 @@
 -- Olist PostgreSQL DDL
+-- Legacy/backward-compatible combined DDL.
+-- Prefer sql/00_create_schemas_and_tables.sql for schema bootstrap and
+-- sql/01_create_marts.sql for marts creation in current ETL flows.
 -- Target schemas:
 --   raw, staging, dwh, marts
 --

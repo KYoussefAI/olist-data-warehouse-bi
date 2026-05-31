@@ -121,18 +121,27 @@ Sources CSV
 
 ```
 olist-data-warehouse-bi/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                     # CI GitHub Actions: installation + pytest
+├── .streamlit/
+│   └── config.toml                    # Configuration visuelle Streamlit
 ├── airflow/
 │   └── dags/
 │       └── olist_etl_dag.py              # DAG Airflow optionnel (production)
+├── dashboard/
+│   ├── README.md                         # Guide d'utilisation du dashboard
+│   └── app.py                            # Dashboard Streamlit connecté aux marts PostgreSQL
 ├── data/
-│   └── raw/                              # Fichiers CSV sources (non versionnés)
+│   └── raw/
+│       └── README.md                     # Liste des 11 CSV Olist attendus
 ├── docs/
 │   └── images/
 │       └── modelisation_dimensionnelle_olist.png
 ├── sql/
-│   ├── 00_create_schemas_and_tables.sql  # DDL complet des 4 couches
-│   ├── 01_create_marts.sql               # Création des vues analytiques
-│   └── 99_quality_checks.sql            # Requêtes de diagnostic
+│   ├── 00_create_schemas_and_tables.sql  # Création des schémas, tables et index
+│   ├── 01_create_marts.sql               # Création des vues analytiques marts
+│   └── 99_quality_checks.sql             # Requêtes de diagnostic
 ├── src/
 │   ├── config.py                         # Paramètres centralisés (DATABASE_URL, chemins)
 │   ├── db.py                             # Connexion SQLAlchemy et utilitaires SQL
@@ -141,6 +150,7 @@ olist-data-warehouse-bi/
 │   ├── load_dwh.py                       # Chargement staging -> dimensions + faits
 │   ├── quality_checks.py                 # Contrôles qualité automatisés
 │   └── run_etl.py                        # Point d'entrée CLI du pipeline
+├── tests/                                # Tests de structure et validation SQL
 ├── .env.example
 ├── docker-compose.yml                    # PostgreSQL 16 conteneurisé
 └── requirements.txt
@@ -158,6 +168,10 @@ olist-data-warehouse-bi/
 | python-dotenv | Configuration par variables d'environnement |
 | Docker Compose | Conteneurisation de PostgreSQL |
 | Apache Airflow | Orchestration du pipeline en production (optionnel) |
+| Streamlit | Interface BI interactive connectée aux vues marts |
+| Plotly | Visualisations interactives du dashboard |
+| Pytest | Validation de structure, routing SQL et vues marts |
+| GitHub Actions | Exécution continue des tests sur push et pull request |
 
 ### Installation et exécution
 
@@ -180,6 +194,9 @@ docker compose up -d
 
 # Exécuter le pipeline complet
 python -m src.run_etl --step all
+
+# Lancer le dashboard
+streamlit run dashboard/app.py
 ```
 
 Chaque étape peut également être exécutée individuellement :
@@ -250,19 +267,24 @@ python -m src.run_etl --step quality    # Contrôles qualité
 
 ---
 
-## Phase 4 — Dashboard Streamlit (en cours)
+## Phase 4 — Dashboard Streamlit
 
-Les vues du schéma `marts` ont été conçues dès la phase de modélisation pour être directement consommables par un dashboard. La phase 4 consiste à développer une interface **Streamlit** connectée à ces vues, sans modification du pipeline existant.
+Le dashboard Streamlit est implémenté et connecté directement aux vues analytiques PostgreSQL du schéma `marts`. Il consomme les vues créées par `sql/01_create_marts.sql` sans dupliquer la logique métier du pipeline ETL, ce qui garantit une séparation claire entre préparation des données et exposition BI.
 
-Pages prévues :
+### Pages du dashboard
 
-| Page | Vue marts utilisée | Contenu |
+| Page | Vues marts utilisées | Contenu |
 |---|---|---|
-| Vue globale des ventes | `marts.sales_overview`, `marts.sales_by_category` | CA mensuel, statuts de commande, top catégories |
-| Analyse des paiements | `marts.payment_analysis` | Répartition par type, distribution des versements |
-| Satisfaction client | `marts.customer_satisfaction` | Scores par mois et par catégorie, taux d'avis négatifs |
-| Performance logistique | `marts.delivery_performance` | Délai moyen, taux de livraison en retard par mois |
-| Tunnel marketing | `marts.marketing_funnel` | Leads, deals conclus, taux de conversion par canal |
+| Vue globale des ventes | `marts.sales_overview`, `marts.sales_by_category` | Revenu mensuel, volumes de commandes, statuts et catégories les plus contributrices |
+| Analyse des paiements | `marts.payment_analysis` | Répartition par mode de paiement, valeur totale et distribution des versements |
+| Satisfaction client | `marts.customer_satisfaction` | Score moyen, distribution des avis et parts d'avis positifs / négatifs |
+| Performance logistique | `marts.delivery_performance` | Délai moyen, écart avec la date estimée et taux de livraison à temps |
+| Tunnel marketing | `marts.marketing_funnel` | MQL, deals gagnés, revenu déclaré et conversion par canal |
+| Contrôles qualité | tables `raw`, `dwh`, `marts` | Vérifications rapides de cohérence et disponibilité des données |
+
+Le dashboard affiche également la cible PostgreSQL active (hôte / base) sans exposer le mot de passe, et gère les jeux de données vides avec des messages explicites lorsque les vues marts n'ont pas encore été chargées.
+
+TODO: ajouter de vraies captures du dashboard une fois des exports validés seront disponibles.
 
 ---
 
@@ -278,7 +300,8 @@ Pages prévues :
 | ETL | Chargement Data Warehouse | Termine |
 | ETL | Création des marts analytiques | Termine |
 | ETL | Contrôles qualité | Termine |
-| Dashboard | Développement Streamlit | En cours |
+| Dashboard | Développement Streamlit | Terminé |
+| CI | Tests de structure et validation SQL | Terminé |
 
 ---
 
