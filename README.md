@@ -252,7 +252,7 @@ python -m src.run_etl --step quality    # Contrôles qualité
 
 ### Contrôles qualité
 
-8 contrôles automatisés sont exécutés après le chargement du Data Warehouse. **Résultat : 8 / 8 contrôles réussis.**
+Les contrôles qualité automatisés vérifient le chargement des couches raw, DWH et marts ainsi que la cohérence des clés critiques. La page Contrôles qualité du dashboard affiche le nombre actuel de contrôles et leur statut PASS/FAIL.
 
 | Contrôle | Résultat |
 |---|:---:|
@@ -284,7 +284,33 @@ Le dashboard Streamlit est implémenté et connecté directement aux vues analyt
 
 Le dashboard affiche également la cible PostgreSQL active (hôte / base) sans exposer le mot de passe, et gère les jeux de données vides avec des messages explicites lorsque les vues marts n'ont pas encore été chargées.
 
-TODO: ajouter de vraies captures du dashboard une fois des exports validés seront disponibles.
+### Aperçu du dashboard
+
+Les captures ci-dessous illustrent les principales pages du dashboard Streamlit connecté aux vues analytiques du schéma marts.
+
+#### 1. Vue globale des ventes
+
+![Vue globale des ventes](docs/images/dashboard/dashboard_sales_overview.png)
+
+#### 2. Analyse des paiements
+
+![Analyse des paiements](docs/images/dashboard/dashboard_payment_analysis.png)
+
+#### 3. Satisfaction client
+
+![Satisfaction client](docs/images/dashboard/dashboard_customer_satisfaction.png)
+
+#### 4. Performance logistique
+
+![Performance logistique](docs/images/dashboard/dashboard_delivery_performance.png)
+
+#### 5. Tunnel marketing
+
+![Tunnel marketing](docs/images/dashboard/dashboard_marketing_funnel.png)
+
+#### 6. Contrôles qualité
+
+![Contrôles qualité](docs/images/dashboard/dashboard_quality_checks.png)
 
 ---
 
